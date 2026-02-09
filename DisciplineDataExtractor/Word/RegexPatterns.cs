@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 
-namespace DisciplineWorkProgram.Word
+namespace DisciplineDataExtractor.Word
 {
     public static class RegexPatterns
     {

@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DisciplineWorkProgram.Word.Helpers
+namespace DisciplineDataExtractor.Word.Helpers
 {
     public static class Tables
     {

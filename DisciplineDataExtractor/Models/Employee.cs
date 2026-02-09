@@ -1,16 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ClosedXML.Excel;
-using DisciplineWorkProgram.Extensions;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using static DisciplineWorkProgram.Word.Helpers.Tables;
-using static DisciplineWorkProgram.Models.Sections.Helpers.Competencies;
-using System;
-using System.Text.RegularExpressions;
-using NPOI.SS.Formula.Functions;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using ClosedXML.Excel;
 using System.Text.Json.Serialization;
 using static DisciplineWorkProgram.Models.Sections.Helpers.ExcelFinder;
 

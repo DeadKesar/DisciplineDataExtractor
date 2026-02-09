@@ -5,7 +5,7 @@ using ClosedXML.Excel;
 using DisciplineWorkProgram.Extensions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using static DisciplineWorkProgram.Word.Helpers.Tables;
+using static DisciplineDataExtractor.Word.Helpers.Tables;
 using static DisciplineWorkProgram.Models.Sections.Helpers.Competencies;
 using System;
 using System.Text.RegularExpressions;

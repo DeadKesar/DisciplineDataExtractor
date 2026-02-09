@@ -6,8 +6,9 @@ using System.IO;
 using System.Linq;
 
 using System;
+using DisciplineDataExtractor.Word;
 
-namespace DisciplineWorkProgram.Word.Helpers
+namespace DisciplineDataExtractor.Word.Helpers
 {
     public static class Ooxml
     {
