@@ -1,16 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿
 using ClosedXML.Excel;
 using DisciplineDataExtractor.Extensions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using static DisciplineDataExtractor.Word.Helpers.Tables;
 using static DisciplineDataExtractor.Models.Sections.Helpers.Competencies;
-using System;
-using System.Text.RegularExpressions;
-using NPOI.SS.Formula.Functions;
-using DocumentFormat.OpenXml.Spreadsheet;
 using DisciplineDataExtractor.Models.Sections.Helpers;
 
 namespace DisciplineDataExtractor.Models.Sections
@@ -90,29 +83,41 @@ namespace DisciplineDataExtractor.Models.Sections
         //Допустим, здесь все равно
         private void LoadCompetenciesMatrix(WordprocessingDocument document)
         {
-            foreach (var table in GetTables(document))
+            // Прямой перебор всех таблиц в документе
+            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<Table>())
             {
-                var headers = GetHeaders(table).ToArray();    //Получить заголовки таблиц
-                                                              //По строкам ориентир. Одну пропускаем, так как это заголовки
-                foreach (var row in table.Descendants<TableRow>().Skip(1).ToArray())
-                {
-                    if (row.Descendants<TableCell>().Count() < 2) continue; //Если повторно некоторый заголовок
+                var rows = table.Descendants<TableRow>().ToArray();
+                if (rows.Length == 0) continue;
 
+                // Заголовки — первая строка таблицы
+                var headerRow = rows[0];
+                var headerCells = headerRow.Descendants<TableCell>().ToArray();
+                var headers = headerCells.Select(cell => cell.InnerText.Trim()).ToArray();
+
+                // Данные — со второй строки
+                foreach (var row in rows.Skip(1))
+                {
                     var cells = row.Descendants<TableCell>().ToArray();
-                    //var disc = cells[0].Elements<Paragraph>().Single().InnerText; //название дисциплины в первой ячейке
-                    var disc = cells[0].InnerText.TrimStart();
+                    if (cells.Length < 2) continue; // Пропускаем неполные строки (заголовки разделов)
+
+                    var disc = cells[0].InnerText.TrimStart(); // Название дисциплины в первой колонке
 
                     if (!DisciplineCompetencies.ContainsKey(disc))
                         DisciplineCompetencies[disc] = new List<string>();
-                    //Если заголовок не код компетенции или ячейка пуста, то пропускаем
+
+                    // Проверяем заголовки на коды компетенций и соответствующие ячейки
                     for (var i = 1; i < headers.Length; i++)
                     {
-                        if (!RegexPatterns.Competence.IsMatch(headers[i]) ||
-                            i - (headers.Length - cells.Length) < 0 ||
-                            string.IsNullOrWhiteSpace(cells[i-(headers.Length - cells.Length)].InnerText))//string.IsNullOrWhiteSpace(cells[i].Elements<Paragraph>().Single().InnerText))
+                        // Индекс ячейки в строке данных (учитываем возможные объединённые ячейки)
+                        int cellIndex = i - (headers.Length - cells.Length);
+                        if (cellIndex < 0) continue;
+
+                        var cellText = cells[cellIndex].InnerText.Trim();
+
+                        if (!RegexPatterns.Competence.IsMatch(headers[i]) || string.IsNullOrWhiteSpace(cellText))
                             continue;
 
-                        DisciplineCompetencies[disc].Add(headers[i]);
+                        DisciplineCompetencies[disc].Add(headers[i].Trim());
                     }
                 }
             }

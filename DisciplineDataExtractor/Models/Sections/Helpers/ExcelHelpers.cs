@@ -1,7 +1,4 @@
 ﻿using ClosedXML.Excel;
-using NPOI.SS.Formula.Functions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DisciplineDataExtractor.Models.Sections.Helpers

@@ -1,31 +1,41 @@
-﻿using DisciplineDataExtractor.Extensions;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Wordprocessing;
-using static DisciplineDataExtractor.Word.Helpers.Tables;
+using DisciplineDataExtractor.Extensions; // для RemoveMultipleSpaces
+using DisciplineDataExtractor.Models.Sections; // для RegexPatterns
 
 namespace DisciplineDataExtractor.Models.Sections.Helpers
 {
-    public class Competencies
+    public static class Competencies
     {
         public static IEnumerable<string> ParseCompetencies(WordprocessingDocument document)
         {
             var competencies = new List<string>();
-            foreach (var cell in GetTablesCells(document)
-                .Where(cell => cell.Descendants<Text>().Any(text => RegexPatterns.Competence.IsMatch(text.Text))))
+
+            // Прямой перебор таблиц и ячеек без хелперов
+            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<Table>())
             {
-                var tmp = string.Empty;
-                foreach (var text in cell.Descendants<Text>())
+                foreach (var cell in table.Descendants<TableCell>())
                 {
-                    if (RegexPatterns.Competence.IsMatch(text.Text) && !string.IsNullOrEmpty(tmp))
+                    // Проверяем, есть ли в ячейке текст с кодом компетенции
+                    if (!cell.Descendants<Text>().Any(t => RegexPatterns.Competence.IsMatch(t.Text)))
+                        continue;
+
+                    var tmp = string.Empty;
+                    foreach (var text in cell.Descendants<Text>())
                     {
-                        competencies.Add(tmp.RemoveMultipleSpaces());
-                        tmp = string.Empty;
+                        if (RegexPatterns.Competence.IsMatch(text.Text) && !string.IsNullOrEmpty(tmp))
+                        {
+                            competencies.Add(tmp.RemoveMultipleSpaces());
+                            tmp = string.Empty;
+                        }
+                        tmp += text.Text;
                     }
-                    tmp += text.Text;
+
+                    if (!string.IsNullOrEmpty(tmp))
+                        competencies.Add(tmp.RemoveMultipleSpaces());
                 }
-                if (!string.IsNullOrEmpty(tmp)) competencies.Add(tmp.RemoveMultipleSpaces());
             }
 
             return competencies;

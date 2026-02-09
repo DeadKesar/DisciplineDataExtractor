@@ -12,146 +12,75 @@ namespace DisciplineDataExtractor.Excel
         private const string ConvertedFilesPath = "Converted/";
         private const string Extension = ".xlsx";
 
-        public static Stream Convert2(string path)//, out string newPath) Void
+
+        /// <summary>
+        /// Конвертирует Stream из .xls или .xlsx в новый Stream с .xlsx-форматом.
+        /// Если вход уже .xlsx — возвращает копию (без изменений).
+        /// Работает полностью в памяти, без записи на диск.
+        /// </summary>
+        /// <param name="inputStream">Входной поток (должен поддерживать Seek и Read).</param>
+        /// <returns>Новый MemoryStream с .xlsx.</returns>
+        /// <exception cref="ArgumentException">Если поток не Excel или повреждён.</exception>
+        public static Stream ConvertToXlsxStream(Stream inputStream)
         {
-            //newPath = GetConvertedFilePath(path);
-            if (!Directory.Exists(ConvertedFilesPath)) Directory.CreateDirectory(ConvertedFilesPath);
-            return ConvertToXlsx(path);
-            //ConvertXlsToXlsx(path).Write(File.Create(newPath));
-        }
+            if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
+            if (!inputStream.CanRead || !inputStream.CanSeek)
+                throw new ArgumentException("Поток должен поддерживать чтение и поиск.", nameof(inputStream));
 
-        //создаём в памяти почищенный учебный план
-        public static Stream Convert(string path)
-        {
-            var newPlan = new NpoiMemoryStream() { AllowClose = false };
-            var newPath = GetConvertedFilePath(path);
+            inputStream.Seek(0, SeekOrigin.Begin);
 
-            ConvertXlsToXlsx2(path).Write(newPlan);
-            newPlan.AllowClose = true;
+            IWorkbook workbookIn;
 
-            return newPlan;
-        }
-
-        private static XSSFWorkbook ConvertXlsToXlsx(string path)
-        {
-            // Путь к исходному файлу
-            string xlsFilePath = path;
-            // Путь к файлу, в который будет конвертирован XLS
-            string xlsxFilePath = GetConvertedFilePath(path);
-
-
-            // Открываем старый Excel файл (.xls)
-            using (var fileStream = new FileStream(xlsFilePath, FileMode.Open, FileAccess.Read))
+            try
             {
-                // Загружаем старый файл (.xls) с помощью HSSF (для .xls файлов)
-                HSSFWorkbook hssfWorkbook = new HSSFWorkbook(fileStream);
-
-                // Создаем новый Excel файл (.xlsx)
-                XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
-
-                // Переносим все листы из старого файла в новый
-                for (int i = 0; i < hssfWorkbook.NumberOfSheets; i++)
+                // Пытаемся открыть как .xlsx (XSSF)
+                workbookIn = new XSSFWorkbook(inputStream);
+                // Если удалось — это уже .xlsx, просто копируем
+            }
+            catch
+            {
+                // Если не удалось — пробуем как .xls (HSSF)
+                inputStream.Seek(0, SeekOrigin.Begin);
+                try
                 {
-                    ISheet sheet = hssfWorkbook.GetSheetAt(i);
-                    ISheet newSheet = xssfWorkbook.CreateSheet(sheet.SheetName);
-
-                    // Копируем строки и ячейки
-                    for (int rowIndex = 0; rowIndex <= sheet.LastRowNum; rowIndex++)
-                    {
-                        IRow row = sheet.GetRow(rowIndex);
-                        if (row != null)
-                        {
-                            IRow newRow = newSheet.CreateRow(rowIndex);
-                            for (int cellIndex = 0; cellIndex < row.Cells.Count; cellIndex++)
-                            {
-                                ICell cell = row.GetCell(cellIndex);
-                                ICell newCell = newRow.CreateCell(cellIndex);
-
-                                if (cell != null)
-                                {
-                                    newCell.SetCellValue(cell.ToString());
-                                }
-                            }
-                        }
-                    }
+                    workbookIn = new HSSFWorkbook(inputStream);
                 }
-                // Сохраняем новый файл (.xlsx)
-                using (var fs = new FileStream(xlsxFilePath, FileMode.Create, FileAccess.Write))
+                catch (Exception ex)
                 {
-                    xssfWorkbook.Write(fs);
+                    throw new ArgumentException("Файл не является поддерживаемым форматом Excel (.xls или .xlsx).", ex);
                 }
-                return xssfWorkbook;
             }
 
-        }
-
-        private static XSSFWorkbook ConvertXlsToXlsx2(string path)
-        {
-            using var inputStream = File.OpenRead(path);
-            // var workbookIn = new HSSFWorkbook(inputStream);
-            var workbookIn = new XSSFWorkbook(inputStream);
+            // Создаём новый .xlsx workbook
             var workbookOut = new XSSFWorkbook();
 
-            for (var i = 0; i < workbookIn.NumberOfSheets; i++)
+            // Словарь для кэширования стилей (чтобы не дублировать)
+            var styleMap = new Dictionary<short, ICellStyle>();
+
+            // Копируем все листы
+            for (int i = 0; i < workbookIn.NumberOfSheets; i++)
             {
                 var sheetIn = workbookIn.GetSheetAt(i);
+                if (sheetIn == null) continue;
+
                 var sheetOut = workbookOut.CreateSheet(sheetIn.SheetName);
-                var rowEnumerator = sheetIn.GetEnumerator();
-                while (rowEnumerator.MoveNext())
-                {
-                    // var rowIn = (HSSFRow)rowEnumerator.Current;
-                    var rowIn = (XSSFRow)rowEnumerator.Current;
-                    // if (rowIn == null || rowIn.IsHidden) continue;
-                    if (rowIn == null) continue;
-                    var rowOut = sheetOut.CreateRow(rowIn.RowNum);
-                    CopyRowProperties(rowOut, rowIn);
-                }
+                CopySheet(sheetIn, sheetOut, workbookIn, workbookOut, styleMap);
             }
-            return workbookOut;
+
+            // Записываем в MemoryStream
+            var outputStream = new MemoryStream();
+            workbookOut.Write(outputStream);
+            outputStream.Seek(0, SeekOrigin.Begin);
+
+            // Освобождаем ресурсы
+            workbookIn.Close();
+            workbookOut.Close();
+
+            return outputStream;
         }
 
-        private static void CopyRowProperties(IRow rowOut, IRow rowIn)
-        {
-            rowOut.RowNum = rowIn.RowNum;
+        
 
-            using var cellEnumerator = rowIn.GetEnumerator();
-
-            while (cellEnumerator.MoveNext())
-            {
-                var cellIn = cellEnumerator.Current;
-                if (cellIn == null) continue;
-                var cellOut = rowOut.CreateCell(cellIn.ColumnIndex, cellIn.CellType);
-                CopyCellProperties(cellOut, cellIn);
-            }
-        }
-
-        private static void CopyCellProperties(ICell cellOut, ICell cellIn)
-        {
-            switch (cellIn.CellType)
-            {
-                case CellType.Blank:
-                    break;
-                case CellType.Boolean:
-                    cellOut.SetCellValue(cellIn.BooleanCellValue);
-                    break;
-                case CellType.Error:
-                    cellOut.SetCellValue(cellIn.ErrorCellValue);
-                    break;
-                case CellType.Formula:
-                    cellOut.SetCellFormula(cellIn.CellFormula);
-                    break;
-                case CellType.Numeric:
-                    cellOut.SetCellValue(cellIn.NumericCellValue);
-                    break;
-                case CellType.String:
-                    cellOut.SetCellValue(cellIn.StringCellValue);
-                    break;
-                case CellType.Unknown:
-                    break;
-                default:
-                    return;
-            }
-        }
 
 
 
