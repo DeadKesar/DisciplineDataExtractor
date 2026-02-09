@@ -83,32 +83,27 @@ namespace DisciplineDataExtractor.Models.Sections
         //Допустим, здесь все равно
         private void LoadCompetenciesMatrix(WordprocessingDocument document)
         {
-            // Прямой перебор всех таблиц в документе
-            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<Table>())
+            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Table>())
             {
-                var rows = table.Descendants<TableRow>().ToArray();
+                var rows = table.Descendants<DocumentFormat.OpenXml.Wordprocessing.TableRow>().ToArray();
                 if (rows.Length == 0) continue;
 
-                // Заголовки — первая строка таблицы
                 var headerRow = rows[0];
-                var headerCells = headerRow.Descendants<TableCell>().ToArray();
+                var headerCells = headerRow.Descendants<DocumentFormat.OpenXml.Wordprocessing.TableCell>().ToArray();
                 var headers = headerCells.Select(cell => cell.InnerText.Trim()).ToArray();
 
-                // Данные — со второй строки
                 foreach (var row in rows.Skip(1))
                 {
-                    var cells = row.Descendants<TableCell>().ToArray();
-                    if (cells.Length < 2) continue; // Пропускаем неполные строки (заголовки разделов)
+                    var cells = row.Descendants<DocumentFormat.OpenXml.Wordprocessing.TableCell>().ToArray();
+                    if (cells.Length < 2) continue;
 
-                    var disc = cells[0].InnerText.TrimStart(); // Название дисциплины в первой колонке
+                    var disc = cells[0].InnerText.TrimStart();
 
                     if (!DisciplineCompetencies.ContainsKey(disc))
                         DisciplineCompetencies[disc] = new List<string>();
 
-                    // Проверяем заголовки на коды компетенций и соответствующие ячейки
                     for (var i = 1; i < headers.Length; i++)
                     {
-                        // Индекс ячейки в строке данных (учитываем возможные объединённые ячейки)
                         int cellIndex = i - (headers.Length - cells.Length);
                         if (cellIndex < 0) continue;
 

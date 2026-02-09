@@ -13,12 +13,10 @@ namespace DisciplineDataExtractor.Models.Sections.Helpers
         {
             var competencies = new List<string>();
 
-            // Прямой перебор таблиц и ячеек без хелперов
-            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<Table>())
+            foreach (var table in document.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Table>())
             {
-                foreach (var cell in table.Descendants<TableCell>())
+                foreach (var cell in table.Descendants<DocumentFormat.OpenXml.Wordprocessing.TableCell>())
                 {
-                    // Проверяем, есть ли в ячейке текст с кодом компетенции
                     if (!cell.Descendants<Text>().Any(t => RegexPatterns.Competence.IsMatch(t.Text)))
                         continue;
 

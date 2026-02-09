@@ -10,6 +10,9 @@
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <!-- Explicitly reference a patched System.Drawing.Common to avoid NU1904 vulnerability from transitive deps -->
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
