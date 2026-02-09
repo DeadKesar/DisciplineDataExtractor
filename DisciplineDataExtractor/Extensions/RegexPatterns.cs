@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DisciplineWorkProgram.Extensions
+namespace DisciplineDataExtractor.Extensions
 {
     public static class RegexPatterns
     {

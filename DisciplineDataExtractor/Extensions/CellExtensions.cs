@@ -1,6 +1,6 @@
 ﻿using ClosedXML.Excel;
 
-namespace DisciplineWorkProgram.Extensions
+namespace DisciplineDataExtractor.Extensions
 {
     public static class CellExtensions
     {

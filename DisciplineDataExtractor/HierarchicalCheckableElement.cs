@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace DisciplineWorkProgram
+namespace DisciplineDataExtractor
 {
     public abstract class HierarchicalCheckableElement : INotifyPropertyChanged
     {

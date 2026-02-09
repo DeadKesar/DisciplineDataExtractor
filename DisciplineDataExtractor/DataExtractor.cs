@@ -1,6 +1,6 @@
 ﻿using ClosedXML.Excel;
-using DisciplineWorkProgram.Models;
-using DisciplineWorkProgram.Models.Sections;
+using DisciplineDataExtractor.Models;
+using DisciplineDataExtractor.Models.Sections;
 using System.Text.Json;
 using System.Collections.Generic; // обязательно
 

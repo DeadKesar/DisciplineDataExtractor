@@ -1,4 +1,4 @@
-﻿namespace DisciplineWorkProgram.Models
+﻿namespace DisciplineDataExtractor.Models
 {
     public class DisciplineDetails
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DisciplineWorkProgram.Models.Sections.Helpers
+namespace DisciplineDataExtractor.Models.Sections.Helpers
 {
     public static class ExcelFinder
     {

@@ -4,7 +4,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace DisciplineWorkProgram.Extensions
+namespace DisciplineDataExtractor.Extensions
 {
     public static class ObjectExtensions
     {

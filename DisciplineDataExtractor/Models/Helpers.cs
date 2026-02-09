@@ -1,15 +1,15 @@
 ﻿using ClosedXML.Excel;
-using DisciplineWorkProgram.Extensions;
-using DisciplineWorkProgram.Models.Sections.Helpers;
+using DisciplineDataExtractor.Extensions;
+using DisciplineDataExtractor.Models.Sections.Helpers;
 using NPOI.HSSF.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static DisciplineWorkProgram.Models.Sections.Helpers.ExcelFinder;
+using static DisciplineDataExtractor.Models.Sections.Helpers.ExcelFinder;
 
 
-namespace DisciplineWorkProgram.Models
+namespace DisciplineDataExtractor.Models
 {
     public static class Helpers
     {

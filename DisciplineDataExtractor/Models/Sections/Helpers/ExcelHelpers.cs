@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace DisciplineWorkProgram.Models.Sections.Helpers
+namespace DisciplineDataExtractor.Models.Sections.Helpers
 {
     public static class ExcelHelpers
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DisciplineWorkProgram.Models.Sections
+namespace DisciplineDataExtractor.Models.Sections
 {
     public class Sections
     {

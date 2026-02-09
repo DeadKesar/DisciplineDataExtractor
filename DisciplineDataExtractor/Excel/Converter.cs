@@ -5,7 +5,7 @@ using NPOI.HSSF.UserModel;   // Для старых .xls (HSSF)
 using NPOI.SS.UserModel;    // Общий интерфейс для HSSF/XSSF
 using NPOI.XSSF.UserModel;  // Для .xlsx (XSSF)
 
-namespace DisciplineWorkProgram.Excel
+namespace DisciplineDataExtractor.Excel
 {
     public class Converter
     {

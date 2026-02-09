@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DisciplineWorkProgram.Models
+namespace DisciplineDataExtractor.Models
 {
     public class Competence
     {

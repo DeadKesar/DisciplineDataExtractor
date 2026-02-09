@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace DisciplineWorkProgram.Extensions
+namespace DisciplineDataExtractor.Extensions
 {
     public static class StringExtensions
     {

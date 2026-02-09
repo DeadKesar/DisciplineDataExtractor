@@ -1,11 +1,11 @@
-﻿using DisciplineWorkProgram.Extensions;
+﻿using DisciplineDataExtractor.Extensions;
 using DocumentFormat.OpenXml.Packaging;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
 using static DisciplineDataExtractor.Word.Helpers.Tables;
 
-namespace DisciplineWorkProgram.Models.Sections.Helpers
+namespace DisciplineDataExtractor.Models.Sections.Helpers
 {
     public class Competencies
     {

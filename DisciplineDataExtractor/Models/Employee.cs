@@ -1,8 +1,8 @@
 ﻿using ClosedXML.Excel;
 using System.Text.Json.Serialization;
-using static DisciplineWorkProgram.Models.Sections.Helpers.ExcelFinder;
+using static DisciplineDataExtractor.Models.Sections.Helpers.ExcelFinder;
 
-namespace DisciplineWorkProgram.Models
+namespace DisciplineDataExtractor.Models
 {
     public class Employee : HierarchicalCheckableElement
     {

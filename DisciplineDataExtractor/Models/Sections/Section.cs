@@ -2,18 +2,18 @@
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
-using DisciplineWorkProgram.Extensions;
+using DisciplineDataExtractor.Extensions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using static DisciplineDataExtractor.Word.Helpers.Tables;
-using static DisciplineWorkProgram.Models.Sections.Helpers.Competencies;
+using static DisciplineDataExtractor.Models.Sections.Helpers.Competencies;
 using System;
 using System.Text.RegularExpressions;
 using NPOI.SS.Formula.Functions;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DisciplineWorkProgram.Models.Sections.Helpers;
+using DisciplineDataExtractor.Models.Sections.Helpers;
 
-namespace DisciplineWorkProgram.Models.Sections
+namespace DisciplineDataExtractor.Models.Sections
 {
     public class Section : HierarchicalCheckableElement //Section - направление
     {
@@ -165,7 +165,7 @@ namespace DisciplineWorkProgram.Models.Sections
                 SectionDictionary["WaySection"] = matches[1].Value; //Профиль
 
             }
-            Disciplines = DisciplineWorkProgram.Models.Helpers.GetDisciplines(workbook, this, SectionDictionary["EducationLevel"]);
+            Disciplines = DisciplineDataExtractor.Models.Helpers.GetDisciplines(workbook, this, SectionDictionary["EducationLevel"]);
             LoadDetailedDisciplineData(workbook);
         }
 

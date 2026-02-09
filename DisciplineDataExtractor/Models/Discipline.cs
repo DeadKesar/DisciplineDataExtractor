@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace DisciplineWorkProgram.Models
+namespace DisciplineDataExtractor.Models
 {
     public class Discipline : HierarchicalCheckableElement
     {
